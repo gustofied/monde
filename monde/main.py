@@ -1,5 +1,6 @@
-from config import *
-import mesh_factory    
+from monde.config import *
+import monde.mesh_factory as mesh_factory 
+ 
 class App:
 
 
@@ -32,7 +33,8 @@ class App:
     
     def initialize_opengl(self) -> None:
         self._set_color(0.1,0.2,0.7,0.5)
-        self.triangle_buffers, self.triangle_vao = mesh_factory.build_triangle_mesh()
+        # self.triangle_buffers, self.triangle_vao = mesh_factory.build_triangle_mesh()
+        self.triangle_vbo, self.triangle_vao = mesh_factory.build_triangle_mesh2()
         self.shader = create_shader_program("shaders/vertex.txt", "shaders/fragment.txt")
         
 
@@ -57,7 +59,8 @@ class App:
             
                 
     def quit(self):
-        glDeleteBuffers(len(self.triangle_buffers), self.triangle_buffers)
+        # glDeleteBuffers(len(self.triangle_buffers), self.triangle_buffers)
+        glDeleteBuffers(1, self.triangle_vbo,)
         glDeleteVertexArrays(1, (self.triangle_vao,))
         glDeleteProgram(self.shader)
         glfw.destroy_window(self.window)
