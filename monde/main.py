@@ -1,10 +1,9 @@
 import glfw
-import numpy as np
 import glfw.GLFW as GLFW_CONSTANTS
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
-import time
-
+import numpy as np
+import ctypes
 
 
 SCREEN_WIDTH = 640
@@ -31,7 +30,48 @@ def create_shader_module(filepath: str, module_type) -> int:
         source_code = file.readlines()
 
     return compileShader(source_code, module_type)
+
+
+
+def build_triangle_mesh()-> tuple[tuple[int, int], int]:                                            
+
+    position_data = np.array(
+[-0.25, -0.75, 0.0,  
+         0.75, -0.75, 0.0,  
+         0.0,   0.75, 0.0], dtype=np.float32)
+
+    color_data = np.array(
+        [0, 1, 2], dtype=np.uint32)
     
+    
+    vao = glGenVertexArrays(1)
+    glBindVertexArray(vao)
+
+    position_buffer = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, position_buffer)
+    glBufferData(GL_ARRAY_BUFFER, position_data.nbytes, position_data, GL_STATIC_DRAW)
+    attribute_index = 0
+    size = 3
+    stride = 12
+    offset = 0
+    glVertexAttribPointer(attribute_index, size, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(offset))
+    glEnableVertexAttribArray(attribute_index)
+
+
+    color_buffer = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer)
+    glBufferData(GL_ARRAY_BUFFER, color_data.nbytes, color_data, GL_STATIC_DRAW)
+    attribute_index = 1
+    size = 1
+    stride = 4
+    offset = 0
+    glVertexAttribIPointer(attribute_index, size, GL_UNSIGNED_INT, stride, ctypes.c_void_p(offset))
+    glEnableVertexAttribArray(attribute_index)
+
+    return ((position_buffer, color_buffer), vao)
+
+    
+
 class App:
 
 
@@ -64,7 +104,7 @@ class App:
     
     def initialize_opengl(self) -> None:
         self._set_color(0.1,0.2,0.7,0.5)
-        self.VAO = glGenVertexArrays(1)
+        self.triangle_buffers, self.triangle_vao = build_triangle_mesh()
         self.shader = create_shader_program("shaders/vertex.txt", "shaders/fragment.txt")
         
 
@@ -81,7 +121,7 @@ class App:
             time_end = glfw.get_time()
             glfw.set_window_title(self.window, F" fps = {str(fps)}") 
             glUseProgram(self.shader)
-            glBindVertexArray(self.VAO)
+            glBindVertexArray(self.triangle_vao)
             glDrawArrays(GL_TRIANGLES, 0, 3)
             glfw.swap_buffers(self.window)
           
@@ -89,7 +129,8 @@ class App:
             
                 
     def quit(self):
-        glDeleteVertexArrays(1, (self.VAO,))
+        glDeleteBuffers(len(self.triangle_buffers), self.triangle_buffers)
+        glDeleteVertexArrays(1, (self.triangle_vao,))
         glDeleteProgram(self.shader)
         glfw.destroy_window(self.window)
         glfw.terminate()
