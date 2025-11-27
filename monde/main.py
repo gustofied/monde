@@ -3,8 +3,6 @@ import monde.mesh_factory as mesh_factory
  
 class App:
 
-
-
     def _set_color(self, r,g,b,a):
         glClearColor(r, g, b, a)
 
@@ -17,7 +15,6 @@ class App:
 
         self.initialize_glfw()
         self.initialize_opengl()
-        
     
     
     def initialize_glfw(self) -> None:    
@@ -35,6 +32,7 @@ class App:
         self._set_color(0.1,0.2,0.7,0.5)
         # self.triangle_buffers, self.triangle_vao = mesh_factory.build_triangle_mesh()
         self.triangle_vbo, self.triangle_vao = mesh_factory.build_triangle_mesh2()
+        self.quad_ebo, self.quad_vbo, self.quad_vao = mesh_factory.build_quad_mesh()
         self.shader = create_shader_program("shaders/vertex.txt", "shaders/fragment.txt")
         
 
@@ -51,8 +49,10 @@ class App:
             time_end = glfw.get_time()
             glfw.set_window_title(self.window, F" fps = {str(fps)}") 
             glUseProgram(self.shader)
-            glBindVertexArray(self.triangle_vao)
-            glDrawArrays(GL_TRIANGLES, 0, 3)
+            # glBindVertexArray(self.triangle_vao)
+            # glDrawArrays(GL_TRIANGLES, 0, 3)
+            glBindVertexArray(self.quad_vao)
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, ctypes.c_void_p(0))
             glfw.swap_buffers(self.window)
           
         self.quit()
@@ -60,8 +60,8 @@ class App:
                 
     def quit(self):
         # glDeleteBuffers(len(self.triangle_buffers), self.triangle_buffers)
-        glDeleteBuffers(1, self.triangle_vbo,)
-        glDeleteVertexArrays(1, (self.triangle_vao,))
+        glDeleteBuffers(3, self.triangle_vbo, self.quad_ebo, self.quad_ebo)
+        glDeleteVertexArrays(2, (self.triangle_vao, self.quad_vao))
         glDeleteProgram(self.shader)
         glfw.destroy_window(self.window)
         glfw.terminate()
