@@ -41,9 +41,8 @@ def build_triangle_mesh2()-> tuple[int, int]:
     vertex_data = np.zeros(3, dtype = data_type_vertex)
     vertex_data[0] = (-0.75, -0.75, 0.0, 0)
     vertex_data[1] = (0.75, -0.75, 0.0, 1)
-    vertex_data[2] = (0.0, 0.75, 0.0, 2)
-    
-    
+    vertex_data[2] = (0.0, 0.75, 0.0, 2) 
+
     vao = glGenVertexArrays(1)
     glBindVertexArray(vao)
 
@@ -64,13 +63,29 @@ def build_triangle_mesh2()-> tuple[int, int]:
 
     return (vbo, vao)
 
-def build_quad_mesh()-> tuple[int, int, int]:                                            
+def build_quad_mesh()-> tuple[int, int, int]:           
+
+    transform = np.array(
+        [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]], dtype=np.float32)
+    
+    vertices = [
+        np.array([-0.75, -0.75, 1], dtype=np.float32),
+        np.array([0.75, -0.75, 1], dtype=np.float32),
+        np.array([0.75, 0.75, 1], dtype=np.float32),
+        np.array([-0.75, 0.75, 1], dtype=np.float32)
+    ] 
+
+    transformed_vertices = [transform.dot(v) for v in vertices]                                
 
     vertex_data = np.zeros(4, dtype = data_type_vertex)
-    vertex_data[0] = (-0.75, -0.75, 0.0, 0)
-    vertex_data[1] = (0.75, -0.75, 0.0, 1)
-    vertex_data[2] = (0.75, 0.75, 0.0, 2)
-    vertex_data[3] = (-0.75, 0.75, 0.0, 1)
+    vertex_data[0] = (transformed_vertices[0][0],transformed_vertices[0][1], 0.0, 0)
+    vertex_data[1] = (transformed_vertices[1][0],transformed_vertices[1][1], 0.0, 1)
+    vertex_data[2] = (transformed_vertices[2][0],transformed_vertices[2][1], 0.0, 2)
+    vertex_data[3] = (transformed_vertices[3][0],transformed_vertices[3][1], 0.0, 1)
+
 
     index_data= np.array((0, 1, 2, 2, 3, 0), dtype= np.ubyte)
     

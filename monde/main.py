@@ -43,14 +43,31 @@ class App:
             if glfw.get_key(self.window,GLFW_CONSTANTS.GLFW_KEY_ESCAPE) == GLFW_CONSTANTS.GLFW_PRESS:
                 glfw.set_window_should_close(self.window, True) 
             glfw.poll_events()
+
+
+            c = np.cos((glfw.get_time()))
+            s = np.sin(np.radians(30))
+            transform = np.array(
+            [
+            [c, -s, 0, 0],
+            [s, c, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]], dtype=np.float32)
+
+
             glClear(GL_COLOR_BUFFER_BIT)
             self._set_color(1,0,1,0.5)
             fps = 1 / (glfw.get_time() - time_end)
             time_end = glfw.get_time()
             glfw.set_window_title(self.window, F" fps = {str(fps)}") 
             glUseProgram(self.shader)
+            location = glGetUniformLocation(self.shader, "model")
+            glUniformMatrix4fv(location, 1 , GL_TRUE, transform)
             # glBindVertexArray(self.triangle_vao)
             # glDrawArrays(GL_TRIANGLES, 0, 3)
+
+
+
             glBindVertexArray(self.quad_vao)
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, ctypes.c_void_p(0))
             glfw.swap_buffers(self.window)
