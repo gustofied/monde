@@ -2,9 +2,11 @@ from monde.config import *
 import monde.mesh_factory as mesh_factory 
  
 class App:
-
+    # maybe not make a method like this lol, obfuscating I guess, is that the correct wordage for this?
     def _set_color(self, r,g,b,a):
         glClearColor(r, g, b, a)
+
+    # maybe not make a method like this lol, obfuscating I guess, is that the correct wordage for this?
 
     def _set_opengl_version(self, major:int, minor:int):
         glfw.window_hint(GLFW_CONSTANTS.GLFW_CONTEXT_VERSION_MAJOR, major)
@@ -24,19 +26,17 @@ class App:
             GLFW_CONSTANTS.GLFW_OPENGL_CORE_PROFILE)
             self._set_opengl_version(3,3)
             glfw.window_hint(GLFW_CONSTANTS.GLFW_OPENGL_FORWARD_COMPAT, GLFW_CONSTANTS.GLFW_TRUE)
-            self.window = glfw.create_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Monde", None, None)
+            glfw.window_hint(GLFW_CONSTANTS.GLFW_RESIZABLE, GL_FALSE)
+            self.window = glfw.create_window(SCREEN_WIDTH, SCREEN_HEIGHT, "monde", None, None)
             glfw.make_context_current(self.window) 
+            glfw.swap_interval(0) #vsync (vertical sync) let's avoid tearing.
     
     
     def initialize_opengl(self) -> None:
-        self._set_color(0.1,0.2,0.7,0.5)
-        # self.triangle_buffers, self.triangle_vao = mesh_factory.build_triangle_mesh()
-        self.triangle_vbo, self.triangle_vao = mesh_factory.build_triangle_mesh2()
+        self._set_color(0.5,0.2,0.7,0.5)
         self.quad_ebo, self.quad_vbo, self.quad_vao = mesh_factory.build_quad_mesh()
         self.shader = create_shader_program("shaders/vertex.txt", "shaders/fragment.txt")
         
-
-
     def run(self):
         time_end = glfw.get_time()
         while not glfw.window_should_close(self.window):
@@ -45,8 +45,11 @@ class App:
             glfw.poll_events()
 
 
+
+            # Transformation Matric (M)
+            
             c = np.cos((glfw.get_time()))
-            s = np.sin(np.radians(30))
+            s = np.sin(np.radians(45))
             transform = np.array(
             [
             [c, -s, 0, 0],
@@ -56,18 +59,12 @@ class App:
 
 
             glClear(GL_COLOR_BUFFER_BIT)
-            self._set_color(1,0,1,0.5)
             fps = 1 / (glfw.get_time() - time_end)
             time_end = glfw.get_time()
             glfw.set_window_title(self.window, F" fps = {str(fps)}") 
             glUseProgram(self.shader)
             location = glGetUniformLocation(self.shader, "model")
             glUniformMatrix4fv(location, 1 , GL_TRUE, transform)
-            # glBindVertexArray(self.triangle_vao)
-            # glDrawArrays(GL_TRIANGLES, 0, 3)
-
-
-
             glBindVertexArray(self.quad_vao)
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, ctypes.c_void_p(0))
             glfw.swap_buffers(self.window)
@@ -76,10 +73,13 @@ class App:
             
                 
     def quit(self):
-        # glDeleteBuffers(len(self.triangle_buffers), self.triangle_buffers)
-        glDeleteBuffers(3, self.triangle_vbo, self.quad_ebo, self.quad_ebo)
-        glDeleteVertexArrays(2, (self.triangle_vao, self.quad_vao))
+
+        glDeleteBuffers(2, self.quad_vbo, self.quad_ebo)
+        glDeleteVertexArrays(2, (self.quad_vao))
         glDeleteProgram(self.shader)
+
+        # glfw stuff
+
         glfw.destroy_window(self.window)
         glfw.terminate()
 
