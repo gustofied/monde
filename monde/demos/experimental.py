@@ -21,6 +21,7 @@ width, height = glfw.get_framebuffer_size(window)
 glViewport(0, 0, width, height)
 glfw.swap_interval(0)
 
+# render loop
 
 time_passed = glfw.get_time()
 while not glfw.window_should_close(window):
@@ -37,5 +38,7 @@ while not glfw.window_should_close(window):
     # do stuff here
 
     glfw.swap_buffers(window)
+
+# cleaning up
 
 glfw.terminate()
