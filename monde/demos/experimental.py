@@ -17,7 +17,8 @@ glfw.window_hint(GLFW_CONSTANTS.GLFW_OPENGL_FORWARD_COMPAT, GLFW_CONSTANTS.GLFW_
 glfw.window_hint(GLFW_CONSTANTS.GLFW_RESIZABLE, GL_FALSE)
 window = glfw.create_window(500, 500, "monde", None, None)
 glfw.make_context_current(window)
-glViewport(0,0,200,200)
+width, height = glfw.get_framebuffer_size(window)
+glViewport(0, 0, width, height)
 glfw.swap_interval(0)
 
 
@@ -36,3 +37,5 @@ while not glfw.window_should_close(window):
     # do stuff here
 
     glfw.swap_buffers(window)
+
+glfw.terminate()
