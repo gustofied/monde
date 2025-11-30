@@ -21,9 +21,22 @@ width, height = glfw.get_framebuffer_size(window)
 glViewport(0, 0, width, height)
 glfw.swap_interval(0)
 
-# render loop
+
 
 time_passed = glfw.get_time()
+
+vertices = np.array(
+    [
+        [-0.5, -0.5, 0.0],
+        [0.5, -0.5, 0.0],
+        [0.0, 0.5, 0.0]
+    ],
+    dtype = np.float32
+)
+
+
+# render loop
+
 while not glfw.window_should_close(window):
     if glfw.get_key(window,GLFW_CONSTANTS.GLFW_KEY_ESCAPE) == GLFW_CONSTANTS.GLFW_PRESS:
         glfw.set_window_should_close(window, True) 
@@ -33,6 +46,13 @@ while not glfw.window_should_close(window):
     fps = 1 / (glfw.get_time() - time_passed)
     time_passed = glfw.get_time()
     glfw.set_window_title(window, f" fps = {str(fps)}")
+
+    vao = glGenVertexArrays(1)
+    vbo = glGenBuffers(1)
+
+    glBindVertexArray(vao)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo)
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
     
 
     # do stuff here
