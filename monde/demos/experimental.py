@@ -4,7 +4,12 @@ import glfw.GLFW as GLFW_CONSTANTS
 from OpenGL.GL.shaders import compileShader
 import numpy as np
 import ctypes
+from pathlib import Path
 
+# Paths
+
+dir = Path(__file__).resolve().parent
+vertex_shader_path = dir / "shaders" / "experimental_vertex.txt"
 
 
 # glfw 
@@ -14,7 +19,7 @@ glfw.window_hint(GLFW_CONSTANTS.GLFW_CONTEXT_VERSION_MAJOR, 3)
 glfw.window_hint(GLFW_CONSTANTS.GLFW_CONTEXT_VERSION_MINOR, 3)
 glfw.window_hint(GLFW_CONSTANTS.GLFW_OPENGL_PROFILE, GLFW_CONSTANTS.GLFW_OPENGL_CORE_PROFILE)
 glfw.window_hint(GLFW_CONSTANTS.GLFW_OPENGL_FORWARD_COMPAT, GLFW_CONSTANTS.GLFW_TRUE)
-glfw.window_hint(GLFW_CONSTANTS.GLFW_RESIZABLE, GL_FALSE)
+glfw.window_hint(GLFW_CONSTANTS.GLFW_RESIZABLE, GLFW_CONSTANTS.GLFW_TRUE)
 window = glfw.create_window(500, 500, "monde", None, None)
 glfw.make_context_current(window)
 width, height = glfw.get_framebuffer_size(window)
@@ -35,6 +40,28 @@ vertices = np.array(
 )
 
 
+# compile object shaders, and shader programme
+
+with open(vertex_shader_path, 'r') as file:
+    shader = file.read()
+
+vertexShader = glCreateShader(GL_VERTEX_SHADER)
+glShaderSource(vertexShader, shader)
+glCompileShader(vertexShader)
+
+success = glGetShaderiv(vertexShader, GL_COMPILE_STATUS)
+print(success) # 1 means it compiled successfully ..
+
+
+# VAO / VBO
+
+vao = glGenVertexArrays(1)
+vbo = glGenBuffers(1)
+
+glBindVertexArray(vao)
+glBindBuffer(GL_ARRAY_BUFFER, vbo)
+glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+
 # render loop
 
 while not glfw.window_should_close(window):
@@ -47,12 +74,7 @@ while not glfw.window_should_close(window):
     time_passed = glfw.get_time()
     glfw.set_window_title(window, f" fps = {str(fps)}")
 
-    vao = glGenVertexArrays(1)
-    vbo = glGenBuffers(1)
 
-    glBindVertexArray(vao)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
     
 
     # do stuff here
