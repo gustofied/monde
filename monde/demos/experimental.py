@@ -10,6 +10,7 @@ from pathlib import Path
 
 dir = Path(__file__).resolve().parent
 vertex_shader_path = dir / "shaders" / "experimental_vertex.txt"
+fragment_shader_path = dir / "shaders" / "experimental_fragment.txt"
 
 
 # glfw 
@@ -42,15 +43,41 @@ vertices = np.array(
 
 # compile object shaders, and shader programme
 
+# vertext shader
+
 with open(vertex_shader_path, 'r') as file:
-    shader = file.read()
+    shaderV = file.read()
 
 vertexShader = glCreateShader(GL_VERTEX_SHADER)
-glShaderSource(vertexShader, shader)
+glShaderSource(vertexShader, shaderV)
 glCompileShader(vertexShader)
 
-success = glGetShaderiv(vertexShader, GL_COMPILE_STATUS)
-print(success) # 1 means it compiled successfully ..
+successV = glGetShaderiv(vertexShader, GL_COMPILE_STATUS)
+print(successV) # 1 means it compiled successfully ..
+
+# fragment shader
+
+with open(fragment_shader_path, 'r') as file:
+    shaderF = file.read()
+
+fragmentShader = glCreateShader(GL_FRAGMENT_SHADER)
+glShaderSource(fragmentShader, shaderF)
+glCompileShader(fragmentShader)
+
+successF = glGetShaderiv(fragmentShader, GL_COMPILE_STATUS)
+print(successF) # 1 means it compiled successfully ..
+
+# shader programme
+
+shaderProgram = glCreateProgram()
+
+glAttachShader(shaderProgram, vertexShader)
+glAttachShader(shaderProgram, fragmentShader)
+glLinkProgram(shaderProgram)
+
+sucsessP = glGetProgramiv(shaderProgram, GL_LINK_STATUS, GL_COMPILE_STATUS)
+print(sucsessP)
+
 
 
 # VAO / VBO
