@@ -78,6 +78,10 @@ glLinkProgram(shaderProgram)
 sucsessP = glGetProgramiv(shaderProgram, GL_LINK_STATUS, GL_COMPILE_STATUS)
 print(sucsessP)
 
+# now that we have linked shader objects and compilled our programme, let's delete the objects..
+
+glDeleteShader(vertexShader)
+glDeleteShader(fragmentShader)
 
 
 # VAO / VBO
