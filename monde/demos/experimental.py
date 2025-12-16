@@ -29,17 +29,24 @@ glfw.swap_interval(0)
 
 
 
+
 time_passed = glfw.get_time()
 
 vertices = np.array(
     [
-        [-0.5, -0.5, 0.0],
+        [0.5, 0.5, 0.0],
         [0.5, -0.5, 0.0],
-        [0.0, 0.5, 0.0]
+        [-0.5, -0.5, 0.0],
+        [-0.5, 0.5, 0.0]
     ],
     dtype = np.float32
 )
 
+indicies = np.array([
+    [0, 1, 3],
+    [1, 2, 3]
+], dtype=np.uint32
+)
 
 # compile object shaders, and shader programme
 
@@ -88,10 +95,19 @@ glDeleteShader(fragmentShader)
 
 vao = glGenVertexArrays(1)
 vbo = glGenBuffers(1)
+ebo = glGenBuffers(1)
 
 glBindVertexArray(vao)
+
 glBindBuffer(GL_ARRAY_BUFFER, vbo)
 glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo)
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies.nbytes, indicies, GL_STATIC_DRAW)
+
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(0))
+glEnableVertexAttribArray(0)
+
 
 # render loop
 
@@ -103,11 +119,12 @@ while not glfw.window_should_close(window):
     glClear(GL_COLOR_BUFFER_BIT)
     fps = 1 / (glfw.get_time() - time_passed)
     time_passed = glfw.get_time()
-    glfw.set_window_title(window, f" fps = {str(fps)}")
+    glfw.set_window_title(window, f" fps = {fps:.1f}")
 
-
+    glUseProgram(shaderProgram)
+    glBindVertexArray(vao)
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, ctypes.c_void_p(0))
     
-
     # do stuff here
 
     glfw.swap_buffers(window)
