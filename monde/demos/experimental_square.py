@@ -9,8 +9,8 @@ from pathlib import Path
 # Paths
 
 dir = Path(__file__).resolve().parent
-vertex_shader_path = dir / "shaders" / "experimental_vertex.txt"
-fragment_shader_path = dir / "shaders" / "experimental_fragment.txt"
+vertex_shader_path = dir / "shaders" / "experimental_square_vertex.txt"
+fragment_shader_path = dir / "shaders" / "experimental_square_fragment.txt"
 
 
 # glfw 
@@ -37,14 +37,14 @@ vertices = np.array(
         [0.5, 0.5, 0.0],
         [0.5, -0.5, 0.0],
         [-0.5, -0.5, 0.0],
-        [-0.5, 0.5, 0.0]
+        [-0.5, 0.5, 0.0],
     ],
     dtype = np.float32
 )
 
 indicies = np.array([
-    [0, 1, 3],
-    [1, 2, 3]
+    [0, 2, 3],
+    [1, 2, 4]
 ], dtype=np.uint32
 )
 
