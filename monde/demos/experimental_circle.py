@@ -21,6 +21,8 @@ glfw.window_hint(GLFW_CONSTANTS.GLFW_RESIZABLE, GLFW_CONSTANTS.GLFW_TRUE)
 window = glfw.create_window(400,400, "testing", None, None)
 glfw.make_context_current(window)
 glfw.swap_interval(0)
+glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
 
 
 # hollow circle 
@@ -56,9 +58,49 @@ triangles_1 = np.stack(
 
 vertices_1 = triangles_1.reshape(-1, 3)
 
-print(vertices_1)
+# print(vertices_1)
 
+
+# Triangle Fan
+
+r_2 = 0.15
+N_2 = 64
+
+angles_2 = np.linspace(0, 2*np.pi, N_2, endpoint=False).astype(np.float32)
+x_2_coordinates = r_2 * np.cos(angles_2) - 0.50
+y_2_coordinates = r_2 * np.sin(angles_2) + 0.25
+z_2_coordinates = np.zeros_like(x_2_coordinates)
+origo_2 = np.array([-0.5, 0.25, 0]).astype(np.float32)
+
+
+vertices_2_gen = np.stack((x_2_coordinates, y_2_coordinates, z_2_coordinates), axis= 1).astype(np.float32)
+vertices_2 = np.vstack((origo_2, vertices_2_gen)).astype(np.float32)
+print(vertices_2[:10])
 # this is the ammount of attributes OpengGL can give on this mac?
+
+
+# Indexed Fan
+
+r_3 = 0.40
+N_3 = 500
+
+angles_3 = np.linspace(0, 2*np.pi, N_3, endpoint=False).astype(np.float32)
+x_3_coordinates = r_3 * np.cos(angles_3) + 0.50
+y_3_coordinates = r_3 * np.sin(angles_3) - 0.25
+z_3_coordinates = np.zeros_like(x_3_coordinates)
+origo_3 = np.array([0.5, -0.25, 0]).astype(np.float32)
+
+
+vertices_3_gen = np.stack((x_3_coordinates, y_3_coordinates, z_3_coordinates), axis= 1).astype(np.float32)
+vertices_3 = np.vstack((origo_3, vertices_3_gen)).astype(np.float32)
+
+print(vertices_3[0:1])
+
+tri_list = [[0, i, i+1] for i in range(1, N_3)] 
+tri_list.append([0, N_3, 1])
+indices = np.array(tri_list, dtype=np.uint32).reshape(-1) 
+print(indices)
+
 
 nr_attributes = glGetIntegerv(GL_MAX_VERTEX_ATTRIBS)
 print(nr_attributes)
@@ -119,7 +161,6 @@ glEnableVertexAttribArray(0)
 
 # triagle circle
 
-
 vao_1 = glGenVertexArrays(1)
 vbo_1 = glGenBuffers(1)
 
@@ -127,6 +168,36 @@ glBindVertexArray(vao_1)
 
 glBindBuffer(GL_ARRAY_BUFFER, vbo_1)
 glBufferData(GL_ARRAY_BUFFER, vertices_1.nbytes, vertices_1, GL_STATIC_DRAW)
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(0))
+glEnableVertexAttribArray(0)
+
+
+
+# triagle fan
+
+vao_2 = glGenVertexArrays(1)
+vbo_2 = glGenBuffers(1)
+
+glBindVertexArray(vao_2)
+
+glBindBuffer(GL_ARRAY_BUFFER, vbo_2)
+glBufferData(GL_ARRAY_BUFFER, vertices_2.nbytes, vertices_2, GL_STATIC_DRAW)
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(0))
+glEnableVertexAttribArray(0)
+
+
+# indexed triangle
+
+vao_3 = glGenVertexArrays(1)
+vbo_3 = glGenBuffers(1)
+ebo_3 = glGenBuffers(1)
+
+glBindVertexArray(vao_3)
+
+glBindBuffer(GL_ARRAY_BUFFER, vbo_3)
+glBufferData(GL_ARRAY_BUFFER, vertices_3.nbytes, vertices_3, GL_STATIC_DRAW)
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_3)
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(0))
 glEnableVertexAttribArray(0)
 
@@ -143,10 +214,16 @@ while not glfw.window_should_close(window):
     glfw.set_window_title(window, f"Experimental")
 
     glUseProgram(shaderProgram)
+    time = glfw.get_time()
+    glUniform1f(glGetUniformLocation(shaderProgram, "u_time"), time)
     glBindVertexArray(vao_0)
     glDrawArrays(GL_LINE_STRIP, 0, N_0) # hollow circle # GL_LINE_LOOP instead too
     glBindVertexArray(vao_1)
     glDrawArrays(GL_TRIANGLES, 0, vertices_1.shape[0]- 10) # triangle  3*N_1
+    glBindVertexArray(vao_2)
+    glDrawArrays(GL_TRIANGLE_FAN, 0, vertices_2.shape[0]) # triangle fan
+    glBindVertexArray(vao_3)
+    glDrawElements(GL_TRIANGLES, indices.size, GL_UNSIGNED_INT, ctypes.c_void_p(0))
     
     # do stuff here
 
