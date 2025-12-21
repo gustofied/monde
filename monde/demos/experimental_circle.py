@@ -42,8 +42,8 @@ z_coordaintes = np.zeros_like(x_coordinates)
 
 vertices = np.column_stack((x_coordinates, y_coordinates, z_coordaintes)).astype(np.float32)
 
-
-
+nr_attributes = glGetIntegerv(GL_MAX_VERTEX_ATTRIBS)
+print(nr_attributes)
 
 
 with open(vertex_shader_path, 'r') as file:
