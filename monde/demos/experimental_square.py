@@ -120,8 +120,9 @@ while not glfw.window_should_close(window):
     fps = 1 / (glfw.get_time() - time_passed)
     time_passed = glfw.get_time()
     glfw.set_window_title(window, f" fps = {fps:.1f}")
-
     glUseProgram(shaderProgram)
+    time = glfw.get_time()
+    glUniform1f(glGetUniformLocation(shaderProgram, "u_time"), time)
     glBindVertexArray(vao)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, ctypes.c_void_p(0))
     
