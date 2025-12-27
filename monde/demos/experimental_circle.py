@@ -6,11 +6,15 @@ import numpy as np
 import ctypes
 from pathlib import Path
 import math
+
 # Paths
 
 dir = Path(__file__).resolve().parent
 vertex_shader_path = dir / "shaders" / "experimental_square_vertex.txt"
 fragment_shader_path = dir / "shaders" / "experimental_square_fragment.txt"
+
+
+# Windows
 
 
 glfw.init()
@@ -204,9 +208,9 @@ glEnableVertexAttribArray(0)
 # render loop
 
 while not glfw.window_should_close(window):
+    glfw.poll_events()
     if glfw.get_key(window,GLFW_CONSTANTS.GLFW_KEY_ESCAPE) == GLFW_CONSTANTS.GLFW_PRESS:
         glfw.set_window_should_close(window, True) 
-    glfw.poll_events()
     glClearColor(0.5, 0.2, 0, 0.2)
     glClear(GL_COLOR_BUFFER_BIT)
 
