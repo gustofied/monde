@@ -14,7 +14,7 @@ vertex_shader_path = dir / "shaders" / "experimental_square_vertex.txt"
 fragment_shader_path = dir / "shaders" / "experimental_square_fragment.txt"
 
 
-# Windows
+# Window
 
 
 glfw.init()
