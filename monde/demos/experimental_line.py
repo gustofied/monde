@@ -55,10 +55,23 @@ vertices = np.array([
     [0.2, 0.5, 0.0],
     [-0.2, 0.9, 0.0]], dtype=np.float32)
 
+N = 50
+R = 5
+
+angles = np.linspace(0, 2*np.pi, N)
+print(angles)
+
+x_coordinates = R * np.cos(angles)
+y_coordinates = R * np.sin(angles)
+z_coordinates = np.zeros(N)
+
+xyz_coordintes = np.concatenate([x_coordinates, y_coordinates, z_coordinates], axis=0).astype(np.float32)
+print(xyz_coordintes)
 # vao and vbo
 
 vao = GL.glGenVertexArrays(1)
 vbo = GL.glGenBuffers(1)
+ebo = GL.glGenBuffers(1)
 
 GL.glBindVertexArray(vao)
 GL.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo)
