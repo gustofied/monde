@@ -16,6 +16,8 @@ window = glfw.create_window(400, 400, "reborn", None, None)
 glfw.make_context_current(window)
 glfw.swap_interval(0)
 
+# oki our window is done, now we have to do what's next and that's perhaps create some shaders, and compile them
+
 
 GL.glClearColor(0.32, 0.31, 0.30, 1)
 
